@@ -54,6 +54,14 @@ describe('intercept', () => {
     })
 
     it('spies on multiple requests', () => {
+      function lotOfGets () {
+        const DEFINE_LOT = 100 // please increase and decrease this number to see test fail and pass
+
+        for (let i = 0; i < DEFINE_LOT; i++) {
+          cy.get('#post-user').should('not.contain', `bla_bla_${i}`)
+        }
+      }
+
       cy.intercept({
         method: 'POST',
         pathname: '/users',
@@ -61,16 +69,19 @@ describe('intercept', () => {
 
       cy.get('#post-user').click()
       cy.wait('@postUser').its('response.statusCode').should('equal', 201)
-
+      lotOfGets()
       // post 2nd time
       cy.get('#post-user').click()
+      lotOfGets()
       cy.wait('@postUser').its('response.statusCode').should('equal', 201)
 
       // post 3rd time
+      lotOfGets()
       cy.get('#post-user').click()
       cy.wait('@postUser').its('response.statusCode').should('equal', 201)
 
       // post 4th time
+      lotOfGets()
       cy.get('#post-user').click()
       cy.wait('@postUser').its('response.statusCode').should('equal', 201)
     })
